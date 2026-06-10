@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgeNova Interpreter</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 AgeNova v0.4 Playground</h1>
+        <p>Write your AgeNova code below and click Run to test.</p>
+        
+        <textarea id="code-input" placeholder='let status = "true"&#10;let user = "Agegnehu"&#10;&#10;if status&#10;print user&#10;&#10;repeat 2&#10;print "Done!"'></textarea>
+        
+        <button id="run-btn">Run Code</button>
+        
+        <h2>Output:</h2>
+        <pre id="output-screen">Waiting for code run...</pre>
+    </div>
+
+    <script src="lexer.js"></script>
+    <script src="parser.js"></script>
+    <script src="runtime.js"></script>
+    <script src="compiler.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
