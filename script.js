@@ -73,3 +73,26 @@ result += text + "\n";
 output.textContent = result;
 
 }
+else if(line.startsWith("if ")){
+
+const condition =
+line.replace("if","").trim();
+
+const nextLine =
+lines[i + 1].trim();
+
+if(condition === "true"){
+
+if(nextLine.startsWith("print ")){
+
+let text =
+nextLine.substring(6)
+.replaceAll('"',"");
+
+result += text + "\n";
+
+}
+
+}
+
+}
