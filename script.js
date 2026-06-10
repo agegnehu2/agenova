@@ -7,13 +7,21 @@ const lines = code.split("\n");
 
 let result = "";
 let vars = {};
-
+let functions = {};
 for(let i = 0; i < lines.length; i++){
 
 let line = lines[i].trim();
 
 if(line.startsWith("let ")){
+else if(line.startsWith("func ")){
 
+const funcName =
+line.replace("func","").trim();
+
+functions[funcName] =
+lines[i + 1].trim();
+
+}
 const parts = line.split("=");
 
 const name =
