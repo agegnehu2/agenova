@@ -63,6 +63,24 @@ class Runtime {
 
           i++; // Skip the next node in the main loop since we already executed it here
         }
+         // 4. Handle IF Statement (v0.4 - አዲሱ ባህሪ)
+      else if (node.type === "IfStatement") {
+        let isTrue = false;
+
+        if (variables[node.condition] !== undefined) {
+          let condValue = variables[node.condition].toString().trim().toLowerCase();
+          if (condValue === "true" || condValue === "1" || condValue === "yes") {
+            isTrue = true;
+          }
+        }
+
+        let nextNode = ast[i + 1];
+
+        if (!isTrue) {
+          
+          i++; // Skip the next statement if false
+        }
+      }
       }
     }
 
