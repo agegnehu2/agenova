@@ -25,7 +25,11 @@ Features:
 - print command
 - variables
 - browser interpreter
-## Author
+## AgeNova v0.3
 
-Agegnehu Shibiru
+Features
 
+- print
+- variables
+- repeat loops
+- browser interpreter
