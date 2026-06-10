@@ -16,8 +16,16 @@ print "Hello World"
 
 ## Version
 
-AgeNova v0.1 Alpha
+AgeNova v0.1 Alpha 
 
+## AgeNova v0.2
+
+Features:
+
+- print command
+- variables
+- browser interpreter
 ## Author
 
 Agegnehu Shibiru
+
