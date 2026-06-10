@@ -6,7 +6,7 @@ class Parser {
     while (i < tokens.length) {
       let token = tokens[i];
 
-      // 1. Handle PRINT statement (e.g., print x)
+      // 1. Handle PRINT statement
       if (token.type === "PRINT") {
         let nextToken = tokens[i + 1]; 
         
@@ -19,7 +19,7 @@ class Parser {
         i += 2; 
       }
       
-      // 2. Handle LET statement (e.g., let x = 5)
+      // 2. Handle LET statement
       else if (token.type === "LET") {
         let idToken = tokens[i + 1];      
         let assignToken = tokens[i + 2];  
@@ -35,17 +35,30 @@ class Parser {
         i += 4; 
       } 
 
-      // 3. Handle REPEAT statement (e.g., repeat 3)
+      // 3. Handle REPEAT statement
       else if (token.type === "REPEAT") {
-        let countToken = tokens[i + 1]; // Holds the number or variable name
+        let countToken = tokens[i + 1];
 
         ast.push({
           type: "RepeatStatement",
           count: countToken ? countToken.value : null,
-          countType: countToken ? countToken.type : null // NUMBER or IDENTIFIER
+          countType: countToken ? countToken.type : null
         });
 
-        i += 2; // Move pointer by 2 since we consumed 'repeat' and the count
+        i += 2;
+      }
+
+      // 4. Handle IF statement (v0.4 - አዲሱ መዋቅር)
+      else if (token.type === "IF") {
+        let conditionToken = tokens[i + 1]; // Holds the condition variable name
+
+        ast.push({
+          type: "IfStatement",
+          condition: conditionToken ? conditionToken.value : null,
+          conditionType: conditionToken ? conditionToken.type : null
+        });
+
+        i += 2; // Move pointer by 2 since we consumed 'if' and the condition
       }
       
       // Prevent infinite loops
