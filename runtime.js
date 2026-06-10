@@ -1,91 +1,77 @@
+// runtime.js - AgeNova v0.5 Runtime Engine with Math & Else execution
+
 class Runtime {
-  execute(ast) {
-    let output = "";
-    const variables = {}; // Memory block to store variable names and values
-
-    for (let i = 0; i < ast.length; i++) {
-      let node = ast[i];
-
-      // 1. Handle PRINT Statement
-      if (node.type === "PrintStatement") {
-        let valueToPrint = node.value;
-
-        if (node.valueType === "IDENTIFIER") {
-          if (variables[node.value] !== undefined) {
-            valueToPrint = variables[node.value]; // Fetch from memory
-          } else {
-            valueToPrint = `ReferenceError: ${node.value} is not defined`;
-          }
-        }
-        output += valueToPrint + "\n";
-      } 
-      
-      // 2. Handle LET Statement (Variable Declaration)
-      else if (node.type === "VariableDeclaration") {
-        variables[node.name] = node.value;
-      }
-
-      // 3. Handle REPEAT Statement (v0.3 Feature)
-      else if (node.type === "RepeatStatement") {
-        let loopCount = 0;
-
-        // Determine if the loop count is a number or a variable reference
-        if (node.countType === "NUMBER") {
-          loopCount = parseInt(node.count, 10);
-        } else if (node.countType === "IDENTIFIER") {
-          if (variables[node.count] !== undefined) {
-            loopCount = parseInt(variables[node.count], 10); // Fetch count from memory
-          } else {
-            output += `ReferenceError: Loop counter variable '${node.count}' is not defined\n`;
-            continue;
-          }
-        }
-
-        // The very next statement in the AST is the block to be repeated
-        let nextNode = ast[i + 1];
-        
-        if (nextNode && nextNode.type === "PrintStatement") {
-          let valueToPrint = nextNode.value;
-
-          // If the inside print uses a variable
-          if (nextNode.valueType === "IDENTIFIER") {
-            if (variables[nextNode.value] !== undefined) {
-              valueToPrint = variables[nextNode.value];
-            } else {
-              valueToPrint = `ReferenceError: ${nextNode.value} is not defined`;
-            }
-          }
-
-          // Run the loop to repeat the print statement
-          for (let j = 0; j < loopCount; j++) {
-            output += valueToPrint + "\n";
-          }
-
-          i++; // Skip the next node in the main loop since we already executed it here
-        }
-      }
-
-      // 4. Handle IF Statement (v0.4 Feature)
-      else if (node.type === "IfStatement") {
-        let isTrue = false;
-
-        // Check the variable value in memory
-        if (variables[node.condition] !== undefined) {
-          let condValue = variables[node.condition].toString().trim().toLowerCase();
-          if (condValue === "true" || condValue === "1" || condValue === "yes") {
-            isTrue = true;
-          }
-        }
-
-        let nextNode = ast[i + 1];
-
-        // If the condition is false, SKIP the next statement completely!
-        if (!isTrue) {
-          i++; 
-        }
-      }
+    constructor() {
+        this.variables = {};
+        this.output = [];
     }
 
-    return output;
-  }
+    execute(ast) {
+        this.output = []; // Reset output for fresh run
+
+        for (let node of ast) {
+            if (node.type === 'VAR_ASSIGN') {
+                // If it's a Math Operation (e.g., let x = 5 + 3)
+                if (node.value && node.value.type === 'MATH') {
+                    const mathNode = node.value;
+                    let leftVal = mathNode.isVarLeft ? this.variables[mathNode.left] : mathNode.left;
+                    let rightVal = mathNode.isVarRight ? this.variables[mathNode.right] : mathNode.right;
+
+                    // Convert to numbers just in case
+                    leftVal = Number(leftVal);
+                    rightVal = Number(rightVal);
+
+                    let calcResult = 0;
+                    if (mathNode.op === 'PLUS') {
+                        calcResult = leftVal + rightVal;
+                    } else if (mathNode.op === 'MINUS') {
+                        calcResult = leftVal - rightVal;
+                    }
+                    this.variables[node.name] = calcResult;
+                } else {
+                    // Regular assignment
+                    this.variables[node.name] = node.value;
+                }
+            } 
+            else if (node.type === 'PRINT') {
+                if (node.isVar) {
+                    this.output.push(this.variables[node.value] !== undefined ? this.variables[node.value] : "Undefined Variable");
+                } else {
+                    this.output.push(node.value);
+                }
+            } 
+            else if (node.type === 'IF') {
+                let condVal = this.variables[node.condition];
+                // Check if condition is string "true" or boolean true
+                if (condVal === "true" || condVal === true) {
+                    for (let subNode of node.body) {
+                        if (subNode.type === 'PRINT') {
+                            this.output.push(subNode.isVar ? this.variables[subNode.value] : subNode.value);
+                        }
+                    }
+                } else {
+                    // Execute ELSE block if condition is false
+                    for (let subNode of node.elseBody) {
+                        if (subNode.type === 'PRINT') {
+                            this.output.push(subNode.isVar ? this.variables[subNode.value] : subNode.value);
+                        }
+                    }
+                }
+            } 
+            else if (node.type === 'REPEAT') {
+                let count = node.isVar ? this.variables[node.count] : node.count;
+                count = parseInt(count);
+
+                for (let k = 0; k < count; k++) {
+                    for (let subNode of node.body) {
+                        if (subNode.type === 'PRINT') {
+                            this.output.push(subNode.isVar ? this.variables[subNode.value] : subNode.value);
+                        }
+                    }
+                }
+            }
+        }
+        return this.output.join('\n');
+    }
 }
+
