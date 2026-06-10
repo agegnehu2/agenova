@@ -33,3 +33,11 @@ Features
 - variables
 - repeat loops
 - browser interpreter
+## AgeNova v0.4
+
+Features
+
+- print
+- variables
+- repeat loops
+- if conditions
