@@ -8,9 +8,9 @@ const lines = code.split("\n");
 let result = "";
 let vars = {};
 
-for(let line of lines){
+for(let i = 0; i < lines.length; i++){
 
-line = line.trim();
+let line = lines[i].trim();
 
 if(line.startsWith("let ")){
 
@@ -40,6 +40,29 @@ result += vars[text] + "\n";
 }else{
 
 result += text + "\n";
+
+}
+
+}
+
+else if(line.startsWith("repeat ")){
+
+const count =
+parseInt(line.replace("repeat","").trim());
+
+let nextLine =
+lines[i + 1].trim();
+
+if(nextLine.startsWith("print ")){
+
+let text =
+nextLine.substring(6).replaceAll('"',"");
+
+for(let j = 0; j < count; j++){
+
+result += text + "\n";
+
+}
 
 }
 
