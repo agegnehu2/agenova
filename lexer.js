@@ -9,11 +9,21 @@ class Lexer {
 
       line = line.trim();
 
+            // Handle 'print' statement (e.g., print x or print "Hello")
       if (line.startsWith("print")) {
-        tokens.push({
-          type: "PRINT",
-          value: line.substring(6)
-        });
+        tokens.push({ type: "PRINT", value: "print" });
+        
+        let valueStr = line.substring(6).trim();
+        
+        // Check if it's a literal String in quotes
+        if (valueStr.startsWith('"') && valueStr.endsWith('"')) {
+          tokens.push({ type: "STRING", value: valueStr.replace(/"/g, "") });
+        } else {
+          // If not in quotes, treat it as a Variable name (Identifier)
+          tokens.push({ type: "IDENTIFIER", value: valueStr }); 
+        }
+      }
+      
       }
 else if (line.startsWith("let")) {
     const parts = line.split(/\s+/); 
